@@ -1,0 +1,284 @@
+﻿
+<script src="~/Scripts/jqueryMinJS.js" type="text/javascript"></script>
+<script>
+
+    var employeeId = '';
+    $(document).ready(function () {
+
+        LoadEmployee();
+        $("#btnSave").click(function () {
+
+            if (!isValid()) return;
+
+            var employee = new Object();
+            employee.name = $('#txtName').val();
+            employee.email = $('#txtEmail').val();
+            employee.contact = $('#txtContact').val();
+            employee.id = employeeId ? employeeId:'';
+
+            $.ajax({
+                url: '/api/Employee',
+                type: 'POST',
+                "headers": {
+                   "Content-Type": "application/json"
+             },
+                dataType: 'json',
+                data: JSON.stringify(employee),
+                success: function (data) {
+                    alert('Data Saved');
+                    Clear();
+                    LoadEmployee();
+
+                },
+                error: function (error) {
+                    console.log(error);
+                    alert('Error in Operation' + error);
+                }
+            });
+
+        });
+        $("#btnCancel").click(function () {
+
+            Clear();
+
+        });
+       
+    });
+    function Clear() {
+
+        $('#txtName').val('');
+        $('#txtEmail').val('');
+        $('#txtContact').val('');
+        employeeId = '';
+
+    }
+    function isValid() {
+
+        if ($('#txtName').val() == '') {
+
+            alert('Please enter name');
+            return false;
+        }
+        if ($('#txtEmail').val() == '') {
+
+            alert('Please enter email');
+            return false;
+        }
+        if ($('#txtContact').val() == '') {
+
+            alert('Please enter contact');
+            return false;
+        }
+        return true;
+
+    }
+    function LoadEmployee() {
+
+        $('#tblTbody').empty();
+
+        $.ajax({
+            type: "GET",
+            url: "/api/Employee/",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+             
+                $.each(data, function (i, item) {
+                    var rows = "<tr>" +
+                        "<td id='lblName'>" + item.name + "</td>" +
+                        "<td id='lblEmail'>" + item.email + "</td>" +
+                        "<td id='lblContact'>" + item.contact + "</td>" +
+                        "<td> <a id='btnEdit' style='cursor: pointer' empid=" + item.id + " class='btnEdit' >Edit</a>" +
+                        "<a id = 'btnDelete' style ='cursor:pointer'  empid=" + item.id + " class='btnDelete'> Delete</a ></td>" +
+
+                        "</tr>";
+                   
+                    $('#tblTbody').append(rows);
+                   
+                });
+                $(".btnEdit").click(function () {
+
+                    let empid = $(this).attr('empid');
+                    EditEmployee(empid)
+                });
+                $(".btnDelete").click(function () {
+
+                    let empid = $(this).attr('empid');
+                    DeleteEmployee(empid)
+                 });
+               
+                //End of foreach Loop
+                console.log(data);
+            }, //End of AJAX Success function
+
+            failure: function (data) {
+                console.log(data.responseText);
+            }, 
+            error: function (data) {
+                onsole.log(data.responseText);
+            } 
+
+        });
+       
+
+    }
+    function EditEmployee(id) {
+
+        $.ajax({
+            type: "GET",
+            url: "/api/Employee/" + id,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data)
+            {
+
+            $('#txtName').val(data.name);
+            $('#txtEmail').val(data.email);
+            $('#txtContact').val(data.contact);     
+             employeeId = data.id;
+                
+            }, 
+            failure: function (data) {
+                console.log(data.responseText);
+            }, //End of AJAX failure function
+            error: function (data) {
+                onsole.log(data.responseText);
+            } //End of AJAX error function
+
+        });
+
+
+    }
+    function DeleteEmployee(id) {
+
+        $.ajax({
+            type: "Delete",
+            url: "/api/Employee/" + id,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+
+                alert('Deleted successfully.');
+                LoadEmployee();
+            },
+            failure: function (data) {
+                console.log(data.responseText);
+            }, //End of AJAX failure function
+            error: function (data) {
+                onsole.log(data.responseText);
+            } //End of AJAX error function
+
+        });
+
+
+    }
+</script>
+
+
+<div style="padding-top:20px">
+
+    <h1>Employee Details</h1>
+
+    <table style="margin-bottom:50px">
+        <tbody>
+
+            <tr>
+                <td>
+
+                    Name
+
+                </td>
+                <td>
+
+                    <input type="text" id="txtName" />
+
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+
+                    Email
+
+                </td>
+                <td>
+
+                    <input type="text" id="txtEmail" />
+
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+
+                    Contact
+
+                </td>
+                <td>
+
+                    <input type="text" id="txtContact" />
+
+                </td>
+
+            </tr>
+
+            <tr rowspan="2">
+
+                <td><button style="margin-left:20px" id="btnSave">Save</button></td>
+                &nbsp;
+                <td><button style="margin-left: 20px" id="btnCancel">Cancel</button></td>
+
+
+            </tr>
+        </tbody>
+
+
+    </table>
+
+
+    <table border="1" width="60%">
+
+        <thead>
+            <tr>
+
+                <th>
+
+                    Name
+
+
+                </th>
+                <th>
+
+                    Email
+
+
+                </th>
+                <th>
+
+                    Contact
+
+
+                </th>
+                <th>
+
+                    Action
+
+
+                </th>
+
+            </tr>
+
+
+        </thead>
+
+        <tbody id="tblTbody">
+          
+
+        </tbody>
+
+
+
+
+    </table>
+
+</div>

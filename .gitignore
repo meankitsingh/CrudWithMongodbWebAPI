@@ -1,0 +1,9 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/Emplolyees.Services/bin/Debug
+/Emplolyees.Services/obj
+/Employees.DataModel/bin/Debug
+/Employees.DataModel/obj
+/packages
